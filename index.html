@@ -54,14 +54,14 @@
             overflow: hidden;
         }
 
-        /* 🌲 พื้นดินทางเดิน (ปรับขยายขนาดให้ใหญ่และหนาขึ้นเด่นชัด) */
+        /* 🧱 พื้นดินทางเดินอันใหม่ (ปรับขนาดให้ใหญ่ชัดเจน) */
         #ground {
             position: absolute;
             bottom: 0;
             width: 100%;
-            height: 140px; /* ขยายความสูงของพื้นดินขึ้นมาเป็น 140px ให้เห็นลายดินชัดๆ */
-            background: url('https://i.postimg.cc/vHZnKc0Z/Background-Eraser-20260602-212434905.png') repeat-x;
-            background-size: auto 100%; /* ปรับให้รูปขยายใหญ่เต็มสัดส่วนความสูง */
+            height: 140px; /* ความหนาของพื้นดิน */
+            background: url('https://i.postimg.cc/hv21YY63/Background-Eraser-20260602-222314997.png') repeat-x;
+            background-size: auto 100%; 
             animation: moveGround 2.5s linear infinite;
             z-index: 2;
         }
@@ -71,7 +71,7 @@
             to { background-position-x: -1000px; }
         }
 
-        /* ตัวละครคุกกี้ (ปรับให้มายืนบนพื้นดินใหม่สูง 140px) */
+        /* ตัวละครคุกกี้ (ยืนบนพื้นดินสูง 140px) */
         #player {
             position: absolute;
             bottom: 140px; 
@@ -219,7 +219,7 @@ const orientationOverlay = document.getElementById('orientationOverlay');
 let isJumping = false;
 let isSliding = false;
 let gravity = 0.6;
-let baseFloor = 140; // อัปเดตฐานรองรับตัวละครตามความสูงพื้นดินใหม่
+let baseFloor = 140; // ยึดตามความสูงพื้นดิน 140px
 let position = baseFloor; 
 let velocity = 0;
 let score = 0;
@@ -255,7 +255,7 @@ window.addEventListener('load', checkOrientation);
 function jump() {
     if (!isJumping && !isSliding && gameActive) {
         isJumping = true;
-        velocity = 14; // ปรับแรงกระโดดให้สมดุลกับความสูง
+        velocity = 14; 
     }
 }
 
@@ -270,7 +270,7 @@ function stopSlide() {
     player.classList.remove('slide');
 }
 
-// ควบคุม
+// คีย์บอร์ด
 document.addEventListener('keydown', (e) => {
     if (e.code === 'Space' || e.code === 'ArrowUp') jump();
     if (e.code === 'ArrowDown') startSlide();
@@ -279,6 +279,7 @@ document.addEventListener('keyup', (e) => {
     if (e.code === 'ArrowDown') stopSlide();
 });
 
+// ระบบสัมผัส
 jumpBtn.addEventListener('touchstart', (e) => { e.preventDefault(); jump(); });
 slideBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startSlide(); });
 slideBtn.addEventListener('touchend', (e) => { e.preventDefault(); stopSlide(); });
@@ -360,10 +361,10 @@ function spawnObjects() {
         obs.style.left = spawnX + 'px';
         if(Math.random() > 0.5) {
             obs.style.height = '50px';
-            obs.style.bottom = baseFloor + 'px'; // ตั้งบนพื้นดินพอดี
+            obs.style.bottom = baseFloor + 'px'; 
         } else {
             obs.style.height = '55px';
-            obs.style.bottom = (baseFloor + 55) + 'px'; // ลอยเหนือพื้นดินพอดีให้สไลด์หลบได้
+            obs.style.bottom = (baseFloor + 55) + 'px'; 
         }
         gameContainer.appendChild(obs);
         obstacles.push(obs);
