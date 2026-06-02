@@ -44,7 +44,7 @@
             100% { transform: rotate(0deg); }
         }
 
-        /* กรอบเกมขยายเต็มจอ + รูปพื้นหลังป่าแฟนตาซีอันใหม่ */
+        /* กรอบเกมขยายเต็มจอ + รูปพื้นหลังป่าแฟนตาซี */
         #gameContainer {
             position: relative;
             width: 100vw;
@@ -54,14 +54,15 @@
             overflow: hidden;
         }
 
-        /* 🧱 ส่วนพื้นดินทางเดิน: ปรับขนาดความหนาให้ใหญ่เต็มตา ชัดเจนขึ้น */
+        /* 🧱 ส่วนพื้นดินทางเดิน: ปรับให้ขยายขนาดภาพขึ้นขีดสุดเพื่อให้ดูหนาและใหญ่ขึ้น */
         #ground {
             position: absolute;
             bottom: 0;
             width: 100%;
-            height: 140px; /* เพิ่มความหนาจาก 110px เป็น 140px เพื่อให้ทางเดินดูใหญ่สมส่วน */
+            height: 180px; /* เพิ่มความสูงพื้นที่พื้นหลังเป็น 180px */
             background: url('https://i.postimg.cc/763jcxxG/Background-Eraser-20260602-225846630.png') repeat-x;
-            background-size: auto 100%; 
+            background-size: auto 180%; /* ซูมขยายตัวรูปภาพทางเดินขึ้น 180% เพื่อเพิ่มความหนาของดิน */
+            background-position: bottom left; /* ล็อกให้ลายดินชิดขอบล่างสุด */
             animation: moveGround 3s linear infinite;
             z-index: 2;
         }
@@ -71,10 +72,10 @@
             to { background-position-x: -1200px; } 
         }
 
-        /* ตัวละครคุกกี้ (ปรับให้ยืนบนพื้นดินที่หนาขึ้น 140px พอดี) */
+        /* ตัวละครคุกกี้ (ขยับขึ้นมายืนบนพื้นดินใหม่ที่สูงหนา 180px) */
         #player {
             position: absolute;
-            bottom: 140px; 
+            bottom: 180px; 
             left: 12%;
             width: 55px;
             height: 70px;
@@ -219,7 +220,7 @@ const orientationOverlay = document.getElementById('orientationOverlay');
 let isJumping = false;
 let isSliding = false;
 let gravity = 0.6;
-let baseFloor = 140; // อัปเดตฐานความสูงตามระดับหน้าดินใหม่
+let baseFloor = 180; // ล็อกฐานระดับพื้นเหยียบใหม่ที่ 180px
 let position = baseFloor; 
 let velocity = 0;
 let score = 0;
@@ -253,7 +254,7 @@ window.addEventListener('load', checkOrientation);
 function jump() {
     if (!isJumping && !isSliding && gameActive) {
         isJumping = true;
-        velocity = 14; // ปรับเพิ่มแรงกระโดดให้รับกับสัดส่วนพื้นดินที่สูงขึ้น
+        velocity = 14; 
     }
 }
 
