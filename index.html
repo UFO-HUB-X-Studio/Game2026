@@ -54,27 +54,27 @@
             overflow: hidden;
         }
 
-        /* 🧱 พื้นดินทางเดินอันใหม่ (ปรับขนาดให้ใหญ่ชัดเจน) */
+        /* 🧱 ส่วนพื้นดินทางเดิน: แก้ไขให้รอยต่อล็อกสัดส่วน ป้องกันการส่ายซ้ายขวา */
         #ground {
             position: absolute;
             bottom: 0;
             width: 100%;
-            height: 140px; /* ความหนาของพื้นดิน */
+            height: 100px; /* ปรับความสูงให้สัมพันธ์กับรูปภาพเพื่อคงสัดส่วนที่ถูกต้อง */
             background: url('https://i.postimg.cc/hv21YY63/Background-Eraser-20260602-222314997.png') repeat-x;
-            background-size: auto 100%; 
-            animation: moveGround 2.5s linear infinite;
+            background-size: auto 100%; /* ล็อกความสูงเพื่อให้สัดส่วนกว้างยาวขยับแบบเป็นเส้นตรง */
+            animation: moveGround 4s linear infinite; /* ปรับเวลาใหลลื่นนุ่มนวลขึ้น */
             z-index: 2;
         }
 
         @keyframes moveGround {
             from { background-position-x: 0; }
-            to { background-position-x: -1000px; }
+            to { background-position-x: -1200px; } /* ปรับระยะวิ่งให้สมดุลเพื่อความสมูท */
         }
 
-        /* ตัวละครคุกกี้ (ยืนบนพื้นดินสูง 140px) */
+        /* ตัวละครคุกกี้ (ปรับให้ยืนบนพื้นดินสูง 100px พอดิบพอดี) */
         #player {
             position: absolute;
-            bottom: 140px; 
+            bottom: 100px; 
             left: 12%;
             width: 55px;
             height: 70px;
@@ -219,7 +219,7 @@ const orientationOverlay = document.getElementById('orientationOverlay');
 let isJumping = false;
 let isSliding = false;
 let gravity = 0.6;
-let baseFloor = 140; // ยึดตามความสูงพื้นดิน 140px
+let baseFloor = 100; // ปรับฐานตัวละครตามระดับพื้นผิวทางเดินใหม่
 let position = baseFloor; 
 let velocity = 0;
 let score = 0;
@@ -228,7 +228,6 @@ let obstacles = [];
 let coins = [];
 let gameSpeed = 7;
 
-// โหมดเต็มจออัตโนมัติ
 function activateFullscreen() {
     const docEl = document.documentElement;
     if (docEl.requestFullscreen) {
@@ -241,7 +240,6 @@ function activateFullscreen() {
 document.addEventListener('touchstart', activateFullscreen);
 document.addEventListener('click', activateFullscreen);
 
-// ตรวจสอบทิศทางหน้าจอ
 function checkOrientation() {
     if (window.innerHeight > window.innerWidth) {
         orientationOverlay.style.display = 'flex';
@@ -255,7 +253,7 @@ window.addEventListener('load', checkOrientation);
 function jump() {
     if (!isJumping && !isSliding && gameActive) {
         isJumping = true;
-        velocity = 14; 
+        velocity = 13; 
     }
 }
 
@@ -270,7 +268,6 @@ function stopSlide() {
     player.classList.remove('slide');
 }
 
-// คีย์บอร์ด
 document.addEventListener('keydown', (e) => {
     if (e.code === 'Space' || e.code === 'ArrowUp') jump();
     if (e.code === 'ArrowDown') startSlide();
@@ -279,7 +276,6 @@ document.addEventListener('keyup', (e) => {
     if (e.code === 'ArrowDown') stopSlide();
 });
 
-// ระบบสัมผัส
 jumpBtn.addEventListener('touchstart', (e) => { e.preventDefault(); jump(); });
 slideBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startSlide(); });
 slideBtn.addEventListener('touchend', (e) => { e.preventDefault(); stopSlide(); });
@@ -302,7 +298,6 @@ function update() {
         player.style.bottom = position + 'px';
     }
 
-    // ขยับสิ่งกีดขวาง
     obstacles.forEach((obs, index) => {
         let left = parseInt(obs.style.left);
         left -= gameSpeed;
@@ -324,7 +319,6 @@ function update() {
         }
     });
 
-    // ขยับเหรียญ
     coins.forEach((coin, index) => {
         let left = parseInt(coin.style.left);
         left -= gameSpeed;
