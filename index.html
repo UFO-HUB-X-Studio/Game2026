@@ -54,28 +54,31 @@
             overflow: hidden;
         }
 
-        /* 🧱 ส่วนพื้นดินทางเดิน: ปรับให้ขยายขนาดภาพขึ้นขีดสุดเพื่อให้ดูหนาและใหญ่ขึ้น */
+        /* 🌱 ทางเดินพื้นหญ้าและดิน (สร้างขึ้นเองด้วย CSS ไม่ใช้รูปภาพ สวย คมชัด นิ่งสนิท 100%) */
         #ground {
             position: absolute;
             bottom: 0;
             width: 100%;
-            height: 180px; /* เพิ่มความสูงพื้นที่พื้นหลังเป็น 180px */
-            background: url('https://i.postimg.cc/763jcxxG/Background-Eraser-20260602-225846630.png') repeat-x;
-            background-size: auto 180%; /* ซูมขยายตัวรูปภาพทางเดินขึ้น 180% เพื่อเพิ่มความหนาของดิน */
-            background-position: bottom left; /* ล็อกให้ลายดินชิดขอบล่างสุด */
-            animation: moveGround 3s linear infinite;
+            height: 160px; /* ความหนาของทางเดินหลัก */
+            background: linear-gradient(
+                to bottom,
+                #5cbae6 0%,      /* ส่วนยอดหญ้าไฮไลท์สีอ่อน */
+                #7cd137 5%,      /* สีหญ้าเขียวสดใสหลัก */
+                #5ba320 20%,     /* เงาใต้พุ่มหญ้า */
+                #644631 20%,     /* เส้นขอบตัดชั้นดิน */
+                #8B5A2B 23%,     /* ชั้นหน้าดินน้ำตาลสว่าง */
+                #5E3A1A 100%     /* ชั้นดินลึกสีน้ำตาลเข้ม */
+            );
+            border-top: 4px solid #fff; /* เพิ่มเส้นขอบบนสีขาวสไตล์การ์ตูนให้ดูเด่นคมชัด */
+            box-shadow: 0 -8px 15px rgba(0, 0, 0, 0.2); /* เพิ่มเงาตกกระทบให้ดูมีมิติ */
             z-index: 2;
+            /* ไม่ต้องใช้ animation moveGround บนพื้นนี้แล้ว เพราะเป็นสีพื้นยาวต่อเนื่อง ไม่เกิดการสะดุดตา */
         }
 
-        @keyframes moveGround {
-            from { background-position-x: 0; }
-            to { background-position-x: -1200px; } 
-        }
-
-        /* ตัวละครคุกกี้ (ขยับขึ้นมายืนบนพื้นดินใหม่ที่สูงหนา 180px) */
+        /* ตัวละครคุกกี้ (ปรับให้ยืนบนทางเดินสูง 160px ได้อย่างพอดี) */
         #player {
             position: absolute;
-            bottom: 180px; 
+            bottom: 160px; 
             left: 12%;
             width: 55px;
             height: 70px;
@@ -220,7 +223,7 @@ const orientationOverlay = document.getElementById('orientationOverlay');
 let isJumping = false;
 let isSliding = false;
 let gravity = 0.6;
-let baseFloor = 180; // ล็อกฐานระดับพื้นเหยียบใหม่ที่ 180px
+let baseFloor = 160; // ล็อกฐานความสูงให้เสมอกับพื้นหญ้าใหม่พอดี
 let position = baseFloor; 
 let velocity = 0;
 let score = 0;
@@ -379,7 +382,6 @@ function spawnObjects() {
 
 function gameOver() {
     gameActive = false;
-    ground.style.animationPlayState = 'paused'; 
     finalScoreEl.innerText = score;
     gameOverScreen.style.display = 'flex';
 }
@@ -398,7 +400,6 @@ function restartGame() {
     player.classList.remove('slide');
     scoreEl.innerText = score;
     gameOverScreen.style.display = 'none';
-    ground.style.animationPlayState = 'running'; 
     gameActive = true;
     update();
 }
