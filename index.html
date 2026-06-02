@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Game2026 - Cookie Run Style</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -44,7 +44,7 @@
             100% { transform: rotate(0deg); }
         }
 
-        /* ตัวกรอบเกมหลักขยายเต็มจอ */
+        /* กรอบเกมขยายเต็มจอ ไร้ขอบดำ */
         #gameContainer {
             position: relative;
             width: 100vw;
@@ -54,12 +54,12 @@
             overflow: hidden;
         }
 
-        /* พื้นดินทางเดิน (ปรับให้สูงและหนาขึ้น) */
+        /* พื้นดินทางเดิน (ปรับสมดุลความสูง) */
         #ground {
             position: absolute;
             bottom: 0;
             width: 100%;
-            height: 90px; /* ปรับเพิ่มความสูงของพื้นดินตรงนี้ */
+            height: 85px; 
             background: url('https://i.postimg.cc/vHZnKc0Z/Background-Eraser-20260602-212434905.png') repeat-x;
             background-size: auto 100%;
             animation: moveGround 2.5s linear infinite;
@@ -71,11 +71,11 @@
             to { background-position-x: -1000px; }
         }
 
-        /* ตัวละครคุกกี้ (ปรับตำแหน่งยืนให้อยู่บนพื้นดินพอดี) */
+        /* ตัวละครคุกกี้ */
         #player {
             position: absolute;
-            bottom: 90px; /* ยืนบนพื้นดินสูง 90px */
-            left: 10%;
+            bottom: 85px; 
+            left: 12%;
             width: 50px;
             height: 65px;
             background: #D2691E;
@@ -114,17 +114,17 @@
             z-index: 3;
         }
 
-        /* คะแนน */
+        /* ส่วนแสดงคะแนน */
         #ui {
             position: absolute;
-            top: 20px;
+            top: 15px;
             left: 20px;
             color: #FFF;
-            font-size: 24px;
+            font-size: 22px;
             font-weight: bold;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
             background: rgba(0, 0, 0, 0.5);
-            padding: 8px 20px;
+            padding: 6px 18px;
             border-radius: 20px;
             z-index: 10;
         }
@@ -156,27 +156,27 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.4);
         }
 
-        /* ปุ่มควบคุมจอมือถือ (ย้ายมาไว้ด้านล่างสุดและกดง่ายขึ้น) */
+        /* ปุ่มควบคุมจอมือถือ (ปรับให้อยู่เหนือขอบล่างขึ้นมาเล็กน้อยกันปุ่มระบบซ้อนทับ) */
         #controls {
             position: absolute;
-            bottom: 20px;
+            bottom: 25px;
             width: 100%;
             display: flex;
             justify-content: space-between;
-            padding: 0 40px;
+            padding: 0 45px;
             z-index: 100;
             pointer-events: none;
         }
 
         .btn {
             pointer-events: auto;
-            padding: 15px 35px;
-            background: rgba(255, 255, 255, 0.85);
+            padding: 14px 32px;
+            background: rgba(255, 255, 255, 0.9);
             border: 2px solid #333;
             border-radius: 50px;
             font-size: 18px;
             font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
     </style>
 </head>
@@ -184,7 +184,7 @@
 
 <div id="orientationOverlay">
     <div class="phone-icon">🔄📱</div>
-    <div>กรุณาหมุนโทรศัพท์เป็นแนวนอน<br><span style="font-size:14px; color:#aaa;">เพื่อความสนุกในการวิ่งคุกกี้!</span></div>
+    <div>กรุณาหมุนโทรศัพท์เป็นแนวนอน<br><span style="font-size:14px; color:#aaa;">เพื่อเปิดโหมดเต็มจอเล่นเกมคุกกี้!</span></div>
 </div>
 
 <div id="gameContainer">
@@ -219,7 +219,7 @@ const orientationOverlay = document.getElementById('orientationOverlay');
 let isJumping = false;
 let isSliding = false;
 let gravity = 0.6;
-let baseFloor = 90; // ยึดตามความสูงพื้นดินใหม่
+let baseFloor = 85; 
 let position = baseFloor; 
 let velocity = 0;
 let score = 0;
@@ -228,12 +228,26 @@ let obstacles = [];
 let coins = [];
 let gameSpeed = 7;
 
-// ระบบตรวจสอบทิศทางหน้าจอ (บังคับแนวนอน)
+// ระบบซ่อนปุ่มโฮมและปุ่มกดย้อนกลับของมือถืออัตโนมัติ (Request Fullscreen)
+function activateFullscreen() {
+    const docEl = document.documentElement;
+    if (docEl.requestFullscreen) {
+        docEl.requestFullscreen().catch(() => {});
+    } else if (docEl.webkitRequestFullscreen) { /* Safari มือถือ */
+        docEl.webkitRequestFullscreen();
+    }
+}
+
+// เปิดโหมดเต็มจอทันทีที่ผู้เล่นแตะหน้าจอเพื่อเล่นเกม
+document.addEventListener('touchstart', activateFullscreen, { once: false });
+document.addEventListener('click', activateFullscreen);
+
+// ตรวจสอบแนวตั้ง-แนวนอน
 function checkOrientation() {
     if (window.innerHeight > window.innerWidth) {
-        orientationOverlay.style.display = 'flex'; // แสดงหน้าจอเตือนถ้าเป็นแนวตั้ง
+        orientationOverlay.style.display = 'flex';
     } else {
-        orientationOverlay.style.display = 'none'; // ซ่อนถ้าเป็นแนวนอนแล้ว
+        orientationOverlay.style.display = 'none';
     }
 }
 window.addEventListener('resize', checkOrientation);
@@ -257,7 +271,7 @@ function stopSlide() {
     player.classList.remove('slide');
 }
 
-// คีย์บอร์ดคอมพิวเตอร์
+// คีย์บอร์ด
 document.addEventListener('keydown', (e) => {
     if (e.code === 'Space' || e.code === 'ArrowUp') jump();
     if (e.code === 'ArrowDown') startSlide();
@@ -266,7 +280,7 @@ document.addEventListener('keyup', (e) => {
     if (e.code === 'ArrowDown') stopSlide();
 });
 
-// ระบบสัมผัสบนมือถือ
+// ทัชสกรีน
 jumpBtn.addEventListener('touchstart', (e) => { e.preventDefault(); jump(); });
 slideBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startSlide(); });
 slideBtn.addEventListener('touchend', (e) => { e.preventDefault(); stopSlide(); });
@@ -288,8 +302,6 @@ function update() {
         }
         player.style.bottom = position + 'px';
     }
-
-    let containerWidth = gameContainer.clientWidth;
 
     // ขยับสิ่งกีดขวาง
     obstacles.forEach((obs, index) => {
@@ -350,10 +362,10 @@ function spawnObjects() {
         obs.style.left = spawnX + 'px';
         if(Math.random() > 0.5) {
             obs.style.height = '45px';
-            obs.style.bottom = baseFloor + 'px'; // ตั้งอยู่บนพื้นดินใหม่พอดี
+            obs.style.bottom = baseFloor + 'px';
         } else {
             obs.style.height = '50px';
-            obs.style.bottom = (baseFloor + 50) + 'px'; // ลอยขึ้นมาเพื่อให้สไลด์หลบได้
+            obs.style.bottom = (baseFloor + 50) + 'px';
         }
         gameContainer.appendChild(obs);
         obstacles.push(obs);
@@ -363,7 +375,7 @@ function spawnObjects() {
         const coin = document.createElement('div');
         coin.classList.add('coin');
         coin.style.left = spawnX + 'px';
-        coin.style.bottom = (Math.random() * 100 + baseFloor + 20) + 'px'; 
+        coin.style.bottom = (Math.random() * 100 + baseFloor + 25) + 'px'; 
         gameContainer.appendChild(coin);
         coins.push(coin);
     }
@@ -399,7 +411,6 @@ function restartGame() {
 
 restartBtn.addEventListener('click', restartGame);
 
-// เริ่มเกมหลัก
 checkOrientation();
 update();
 spawnObjects();
