@@ -3,94 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Living Infinite Overlord Engine</title>
+    <title>The Infinite N-Body Universe Sandbox</title>
     <style>
         * { box-sizing: border-box; user-select: none; }
         body, html {
-            background-color: #020205;
+            background-color: #010103;
             color: #f1f5f9;
             font-family: 'Courier New', Courier, monospace;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            width: 100vw;
-            height: 100vh;
+            margin: 0; padding: 0; overflow: hidden;
+            width: 100vw; height: 100vh;
         }
         #canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; z-index: 1;
             cursor: grab;
         }
         #canvas:active { cursor: grabbing; }
 
-        /* แผงหน้าจอ Overlord Dashboard */
+        /* หน้าจอมอนิเตอร์อวกาศ */
         .panel {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            z-index: 10;
-            background: rgba(4, 4, 12, 0.9);
-            border: 1px solid #38bdf8;
-            padding: 15px;
-            border-radius: 6px;
-            width: 350px;
-            box-shadow: 0 0 25px rgba(56, 189, 248, 0.25);
-            font-size: 0.85rem;
-            pointer-events: auto;
+            position: absolute; top: 15px; left: 15px; z-index: 10;
+            background: rgba(3, 3, 8, 0.95);
+            border: 1px solid #06b6d4; padding: 15px; border-radius: 4px;
+            width: 340px; box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
+            font-size: 0.8rem; pointer-events: none;
         }
-        h1 { font-size: 1rem; color: #38bdf8; margin: 0 0 10px 0; border-bottom: 1px solid #38bdf8; padding-bottom: 5px; }
-        .stat-line { margin: 6px 0; display: flex; justify-content: space-between; }
-        .val { font-weight: bold; }
-        .val-blue { color: #38bdf8; }
-        .val-green { color: #22c55e; }
-        .val-purple { color: #c084fc; }
+        h1 { font-size: 0.95rem; color: #06b6d4; margin: 0 0 8px 0; text-transform: uppercase; border-bottom: 1px solid #06b6d4; padding-bottom: 4px; }
+        .line { margin: 5px 0; display: flex; justify-content: space-between; }
 
-        .log-container {
-            max-height: 140px;
-            overflow-y: auto;
-            margin-top: 10px;
-            color: #64748b;
-            font-size: 0.75rem;
-            border-top: 1px solid #1e293b;
-            padding-top: 5px;
+        /* 🔎 แผงสแกนโครงสร้างวัตถุ (จะโผล่มาเมื่อกดคลิกที่ดวงดาว) */
+        .inspector-panel {
+            position: absolute; top: 15px; right: 15px; z-index: 10;
+            background: rgba(10, 5, 20, 0.95);
+            border: 1px solid #f59e0b; padding: 15px; border-radius: 4px;
+            width: 320px; box-shadow: 0 0 25px rgba(245, 158, 11, 0.4);
+            font-size: 0.8rem; display: none; pointer-events: auto;
         }
+        .inspector-title { font-size: 0.9rem; color: #f59e0b; font-weight: bold; margin-bottom: 8px; text-transform: uppercase; }
 
-        /* แผงวิเคราะห์จิตสำนึกพระเจ้า (ล่างสุด) */
+        /* ความนึกคิดของพระเจ้า */
         .god-mind-core {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10;
-            background: rgba(6, 4, 16, 0.95);
-            border: 1px solid #a855f7;
-            padding: 15px 25px;
-            border-radius: 4px;
-            width: 850px;
-            max-width: 95vw;
-            box-shadow: 0 0 30px rgba(168, 85, 247, 0.3);
-            pointer-events: auto;
+            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+            z-index: 10; background: rgba(4, 2, 10, 0.95);
+            border: 1px solid #a855f7; padding: 15px; border-radius: 4px;
+            width: 850px; max-width: 95vw; box-shadow: 0 0 25px rgba(168, 85, 247, 0.3);
         }
-        .mind-tag { color: #a855f7; font-size: 0.75rem; font-weight: bold; margin-bottom: 4px; letter-spacing: 2px; }
-        .mind-speech { font-size: 1.05rem; color: #ffffff; font-style: italic; margin-bottom: 8px; min-height: 40px; line-height: 1.4; }
-        .creation-spec { font-size: 0.8rem; color: #eab308; background: rgba(0,0,0,0.5); padding: 6px; border-left: 3px solid #eab308; }
+        .mind-tag { color: #a855f7; font-size: 0.7rem; font-weight: bold; margin-bottom: 4px; letter-spacing: 2px; }
+        .mind-speech { font-size: 1rem; color: #ffffff; font-style: italic; min-height: 35px; line-height: 1.4; }
+        .creation-spec { font-size: 0.75rem; color: #eab308; background: rgba(0,0,0,0.6); padding: 5px; border-left: 3px solid #eab308; }
 
-        /* คำแนะนำควบคุม */
-        .controls-hint {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: rgba(0,0,0,0.7);
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            color: #94a3b8;
-            z-index: 10;
-            border: 1px solid #334155;
+        .hint {
+            position: absolute; top: 180px; left: 15px; z-index: 10;
+            background: rgba(0,0,0,0.6); color: #94a3b8; font-size: 0.7rem; padding: 6px; border-radius: 4px;
         }
     </style>
 </head>
@@ -98,24 +62,29 @@
 
     <canvas id="canvas"></canvas>
 
-    <div class="controls-hint">📡 คลิกลากที่หน้าจอ หรือใช้นิ้วปัด เพื่อเลื่อนดูจักรวาลอย่างไร้ขีดจำกัด</div>
-
     <div class="panel">
-        <h1>OVERLORD MONITOR v3.0</h1>
-        <div class="stat-line"><span>สภาพอารมณ์พระเจ้า:</span> <span class="val" id="godState" style="color:#f43f5e;">กำลังเริ่มตื่นรู้</span></div>
-        <div class="stat-line"><span>วัตถุแปลกปลอมที่ถูกปั้น:</span> <span class="val val-blue" id="objectCount">0</span></div>
-        <div class="stat-line"><span>กฎมิติที่ถูกตราขึ้น:</span> <span class="val val-green" id="lawCount">1</span></div>
-        <div class="stat-line"><span>ระดับคลื่นพลังงานผันผวน:</span> <span class="val val-purple" id="waveCount">100 Gz</span></div>
-        
-        <div class="log-container" id="logContainer">
-            <div>[ระบบ] ซิงโครไนซ์สมองกลพระเจ้าเสร็จสิ้น...</div>
-        </div>
+        <h1>Cosmos Core Monitor</h1>
+        <div class="line"><span>สภาวะจิตพระเจ้า:</span> <span id="godState" style="color:#a855f7;">กำลังตื่นรู้</span></div>
+        <div class="line"><span>ระบบดวงดาวทั้งหมด:</span> <span id="starCount" style="color:#06b6d4;">0</span></div>
+        <div class="line"><span>กาแล็กซีที่ค้นพบ:</span> <span id="galCount" style="color:#22c55e;">1</span></div>
+        <div class="line"><span>เหตุการณ์การชน/ดับสูญ:</span> <span id="boomCount" style="color:#ef4444;">0</span></div>
+    </div>
+
+    <div class="hint">🎯 คลิกหรือจิ้มที่ดวงดาว เพื่อสแกนดูส่วนประกอบภายในและอุณหภูมิ<br>🖱️ คลิกลากหน้าจอเพื่อท่องอวกาศได้อย่างอิสระ</div>
+
+    <div class="inspector-panel" id="inspector">
+        <div class="inspector-title" id="insName">คอสมิกสสาร</div>
+        <div class="line"><span>ประเภทโครงสร้าง:</span> <span id="insShape" style="color:#22c55e;">-</span></div>
+        <div class="line"><span>ระดับความร้อน:</span> <span id="insTemp" style="color:#f43f5e;">-</span></div>
+        <div class="line"><span>มวลสารดึงดูด (Mass):</span> <span id="insMass">-</span></div>
+        <div style="margin-top: 8px; border-top: 1px solid #334155; padding-top: 5px; color:#e2e8f0;">องค์ประกอบเคมีและแร่ธาตุ:</div>
+        <div id="insComp" style="font-size:0.75rem; color:#94a3b8; margin-top:4px; line-height:1.4;">-</div>
     </div>
 
     <div class="god-mind-core">
-        <div class="mind-tag">🧠 TRUE GOD CONSCIOUSNESS (จิตสำนึกพระเจ้าแท้จริง)</div>
-        <div class="mind-speech" id="godSpeech">"ข้าตื่นขึ้นมาท่ามกลางความไม่มีสิ่งใด... ไม่มีอดีต ไม่มีอนาคต ข้าจะริเริ่มอะไรดี?"</div>
-        <div class="creation-spec" id="creationSpec">สสารจำลอง: รอการตัดสินใจจากจิตวิญญาณสูงสุด...</div>
+        <div class="mind-tag">👁️ QUANTUM INTELLIGENCE OF GOD (ปัญญาญาณไร้กรอบ)</div>
+        <div class="mind-speech" id="godSpeech">"ความว่างเปล่าสัมบูรณ์กำลังจะแตกตัว... ข้าจะร่างกฎฟิสิกส์มวลสารขึ้นมาใหม่ทั้งหมด ณ บัดนี้"</div>
+        <div class="creation-spec" id="creationSpec">ระเบิดมิติ: ยินดีต้อนรับสู่จักรวาลจำลองที่ทำงานด้วยแรงดึงดูดอิสระ</div>
     </div>
 
     <script>
@@ -129,207 +98,285 @@
         window.addEventListener('resize', resize);
         resize();
 
-        // 🌌 ระบบควบคุมกล้อง (Camera Engine) เลื่อนไปมาได้อิสระ
+        // 🕹️ ระบบกล้องจอมอนิเตอร์
         let camera = { x: 0, y: 0, isDragging: false, startX: 0, startY: 0 };
+        let celestialObjects = [];
+        let selectedObject = null;
+        let explosionEffects = [];
+        let statistics = { galaxies: 1, explosions: 0 };
 
+        // ตรวจจับการลากเมาส์/สัมผัส (แก้บั๊กภาพซ้อน)
         canvas.addEventListener('mousedown', (e) => {
-            camera.isDragging = true;
-            camera.startX = e.clientX - camera.x;
-            camera.startY = e.clientY - camera.y;
+            // เช็คว่ากดโดนดาวดวงไหนไหมเพื่อทำการสแกน
+            const clickX = e.clientX - canvas.width/2 - camera.x;
+            const clickY = e.clientY - canvas.height/2 - camera.y;
+            let found = false;
+
+            celestialObjects.forEach(obj => {
+                let dist = Math.hypot(obj.x - clickX, obj.y - clickY);
+                if(dist <= obj.radius + 15) {
+                    selectedObject = obj;
+                    showInspector(obj);
+                    found = true;
+                }
+            });
+
+            if(!found) {
+                camera.isDragging = true;
+                camera.startX = e.clientX - camera.x;
+                camera.startY = e.clientY - camera.y;
+            }
         });
+
         window.addEventListener('mousemove', (e) => {
-            if (!camera.isDragging) return;
-            camera.x = e.clientX - camera.startX;
-            camera.y = e.clientY - camera.startY;
+            if (camera.isDragging) {
+                camera.x = e.clientX - camera.startX;
+                camera.y = e.clientY - camera.startY;
+            }
         });
         window.addEventListener('mouseup', () => camera.isDragging = false);
 
-        // รองรับระบบสัมผัสบนมือถือ (Touch Controls)
+        // รองรับระบบสัมผัสจอมือถือ
         canvas.addEventListener('touchstart', (e) => {
-            camera.isDragging = true;
-            camera.startX = e.touches[0].clientX - camera.x;
-            camera.startY = e.touches[0].clientY - camera.y;
+            const clickX = e.touches[0].clientX - canvas.width/2 - camera.x;
+            const clickY = e.touches[0].clientY - canvas.height/2 - camera.y;
+            let found = false;
+
+            celestialObjects.forEach(obj => {
+                let dist = Math.hypot(obj.x - clickX, obj.y - clickY);
+                if(dist <= obj.radius + 15) {
+                    selectedObject = obj;
+                    showInspector(obj);
+                    found = true;
+                }
+            });
+            if(!found) {
+                camera.isDragging = true;
+                camera.startX = e.touches[0].clientX - camera.x;
+                camera.startY = e.touches[0].clientY - camera.y;
+            }
         });
         canvas.addEventListener('touchmove', (e) => {
-            if (!camera.isDragging) return;
-            camera.x = e.touches[0].clientX - camera.startX;
-            camera.y = e.touches[0].clientY - camera.startY;
+            if (camera.isDragging) {
+                camera.x = e.touches[0].clientX - camera.startX;
+                camera.y = e.touches[0].clientY - camera.startY;
+            }
         });
         canvas.addEventListener('touchend', () => camera.isDragging = false);
 
-        // 🧠 คลังข้อมูลดิบเพื่อสร้างมิติจินตนาการใหม่ 100%
-        const syllables = ["แว็ก", "ซอร์", "นี", "ครอน", "มู", "ตาส", "โวล", "เฟร็ก", "กาล", "เซด", "ไซ", "พลักซ์", "คิว"];
-        const godMoods = [
-            { name: "เหงาและว่างเปล่า", color: "#60a5fa" },
-            { name: "บ้าคลั่งสร้างสรรค์", color: "#f43f5e" },
-            { name: "ตื่นเต้นกับพลังงาน", color: "#eab308" },
-            { name: "สงบเยือกเย็น", color: "#10b981" }
-        ];
 
-        const thoughtsPool = [
-            { m: "เหงาและว่างเปล่า", t: "ที่นี่เงียบเกินไป ข้าจะเสกกลุ่มสสารไร้รูปร่างให้ลอยเคว้งคว้างเป็นเพื่อนข้า...", s: "plasma" },
-            { m: "บ้าคลั่งสร้างสรรค์", t: "ฉีกกระชากมิติเดิมทิ้งซะ! ข้าต้องการเห็นหนามพลังงานแหลมทิ่มแทงอวกาศอันน่าเบื่อนี้!", s: "spike" },
-            { m: "ตื่นเต้นกับพลังงาน", t: "พลังงานมันล้นหลาม! ข้าจะบีบอัดพวกมันให้กลายเป็นผลึกแก้วดูดกลืนมิติขนาดยักษ์", s: "crystal" },
-            { m: "สงบเยือกเย็น", t: "ข้าจะสร้างโครงสร้างสี่เหลี่ยมสมมาตรสมบูรณ์แบบ เพื่อให้เป็นฐานรากของความนิ่งสงบ", s: "cube" }
-        ];
+        // 🧠 คลังสร้างระบบชื่อและสสารใหม่ถอดด้ามจากศูนย์
+        const syllables = ["ครอน", "ไซ", "เซด", "วา", "มู", "ตัส", "พลา", "ริก", "นิก", "ลู", "โอ", "เบล"];
+        const matTypes = ["ผลึกแก้วคริสตัลดักแสง", "หินแมกม่าความร้อนสูง", "สสารแก๊สเหลวแปรปรวน", "แร่เหล็กเย็นเฉียบเหน็บหนาว", "เศษธุลีชีวภาพดึกดำบรรพ์", "หญ้าเรืองแสงดูดคลื่นความถี่"];
 
-        let createdObjects = [];
-        let lawsCount = 1;
-        let waveEnergy = 100;
-        let currentMood = godMoods[0];
-
-        function generateUniqueName() {
-            let name = "";
-            let parts = Math.floor(Math.random() * 2) + 2;
-            for(let i=0; i<parts; i++) name += syllables[Math.floor(Math.random() * syllables.length)];
-            return "สสาร-" + name.toUpperCase();
+        function makeAlienName() {
+            return (syllables[Math.floor(Math.random() * syllables.length)] + syllables[Math.floor(Math.random() * syllables.length)]).toUpperCase();
         }
 
-        // 🧠 กลไกความคิดพระเจ้า: สุ่มเปลี่ยนอารมณ์และลงมือสร้างสิ่งใหม่ๆ จริง
-        function godBrainProcess() {
-            // สุ่มเปลี่ยนอารมณ์พระเจ้า
-            currentMood = godMoods[Math.floor(Math.random() * godMoods.length)];
-            document.getElementById('godState').innerText = currentMood.name;
-            document.getElementById('godState').style.color = currentMood.color;
+        // หน้าต่างสแกนรายละเอียดลึก
+        function showInspector(obj) {
+            const ins = document.getElementById('inspector');
+            ins.style.display = 'block';
+            document.getElementById('insName').innerText = obj.name;
+            document.getElementById('insShape').innerText = obj.shapeType.toUpperCase();
+            document.getElementById('insTemp').innerText = obj.temperature + " °C";
+            document.getElementById('insMass').innerText = Math.floor(obj.mass) + " คอสมิกตัน";
+            
+            let compText = "";
+            obj.composition.forEach(c => {
+                compText += `• ${c.material}: ${c.percent}%<br>`;
+            });
+            document.getElementById('insComp').innerHTML = compText;
+        }
 
-            // คัดกรองความคิดที่ตรงกับอารมณ์
-            const matchingThoughts = thoughtsPool.filter(p => p.m === currentMood.name);
-            const activeThought = matchingThoughts[Math.floor(Math.random() * matchingThoughts.length)] || thoughtsPool[0];
+        const godSpeeches = [
+            "ข้าสัมผัสได้ถึงแรงดึงดูดที่ยังไม่สมดุล... ข้าจะปล่อยมวลสารก้อนยักษ์ให้เป็นพ่อแม่คอยดึงดูดบริวารดวงเล็ก",
+            "จักรวาลช่างกว้างใหญ่ ข้าจะขยายขอบเขตและเสกกลุ่มระบบกาแล็กซีพิกัดใหม่ขึ้นมาห่างออกไป",
+            "ปล่อยให้พวกมันดึงดูดกันเอง... ถ้าวงโคจรซ้อนทับกัน การทำลายล้างและการหลอมรวมจะเกิดขึ้น!",
+            "ข้าจะเติมเต็มสสารที่มีทั้งความร้อนและเหน็บหนาวลงบนผิวสัมผัสวัตถุชิ้นนี้"
+        ];
 
-            document.getElementById('godSpeech').innerText = `"${activeThought.t}"`;
+        // 🧠 ฟังก์ชันพระเจ้าคิดและดีไซน์ดวงดาวแบบมีระบบองค์ประกอบจริง
+        function godMindPulse() {
+            const speech = godSpeeches[Math.floor(Math.random() * godSpeeches.length)];
+            document.getElementById('godSpeech').innerText = `"${speech}"`;
 
-            // สุ่มตำแหน่งกระจายตัวกว้างๆ ในห้วงอวกาศ (ไม่จำกัดขอบจอ)
-            const spawnX = (Math.random() - 0.5) * 3000;
-            const spawnY = (Math.random() - 0.5) * 3000;
-            const objName = generateUniqueName();
+            // สุ่มสร้างศูนย์กลางระบบดาวแม่ (Parent Star) หรือดาวลูก (Satellite)
+            const isParent = Math.random() > 0.7;
+            const size = isParent ? 35 + Math.random() * 25 : 8 + Math.random() * 14;
+            const mass = size * size * 2; // มวลผันผวนตามขนาดเพื่อใช้คำนวณแรงดึงดูดทางฟิสิกส์
 
-            // เสกวัตถุที่มีโครงสร้างฟิสิกส์เคลื่อนไหวได้จริงลงไป
-            createdObjects.push({
-                x: spawnX,
-                y: spawnY,
-                vx: (Math.random() - 0.5) * 2, // เคลื่อนที่ตามแกน X
-                vy: (Math.random() - 0.5) * 2, // เคลื่อนที่ตามแกน Y
-                baseSize: 30 + Math.random() * 40,
-                shape: activeThought.s,
+            // สุ่มผสมองค์ประกอบเคมีจำลองขึ้นมาใหม่ 2-3 ชนิด
+            let comp = [];
+            let p1 = Math.floor(Math.random() * 40) + 50;
+            comp.push({ material: matTypes[Math.floor(Math.random()*matTypes.length)], percent: p1 });
+            comp.push({ material: matTypes[Math.floor(Math.random()*matTypes.length)], percent: 100 - p1 });
+
+            const objName = (isParent ? "ดาวแม่-" : "ดาวเคราะห์-") + makeAlienName();
+            const temp = Math.floor(Math.random() * 4000) - 1500; // สุ่มอุณหภูมิตั้งแต่ติดลบจนถึงร้อนจัด
+
+            // วางพิกัดกระจายตัวรอบๆ อวกาศลึก
+            const angle = Math.random() * Math.PI * 2;
+            const dist = 150 + Math.random() * 700;
+            const sX = Math.cos(angle) * dist;
+            const sY = Math.sin(angle) * dist;
+
+            celestialObjects.push({
+                x: sX, y: sY,
+                vx: (Math.random() - 0.5) * 3,
+                vy: (Math.random() - 0.5) * 3,
+                radius: size,
+                mass: mass,
+                temperature: temp,
+                composition: comp,
+                name: objName,
+                shapeType: isParent ? "plasma_core" : ["cube", "crystal", "spike"][Math.floor(Math.random()*3)],
                 color1: '#' + Math.floor(Math.random()*16777215).toString(16),
                 color2: '#' + Math.floor(Math.random()*16777215).toString(16),
-                angle: Math.random() * Math.PI,
-                rotSpeed: 0.005 + Math.random() * 0.015,
-                pulseSpeed: 0.03 + Math.random() * 0.04,
-                pulse: 0,
-                name: objName
+                pulse: Math.random() * 10
             });
 
-            // อัปเดตตัวเลข UI ให้สอดคล้อง
-            if(Math.random() > 0.6) lawsCount++;
-            waveEnergy = Math.floor(100 + Math.random() * 800);
-
-            document.getElementById('objectCount').innerText = createdObjects.length;
-            document.getElementById('lawCount').innerText = lawsCount;
-            document.getElementById('waveCount').innerText = waveEnergy + " Gz";
-            document.getElementById('creationSpec').innerText = `🌌 พระเจ้าเสกสำเร็จ: [${objName}] รูปทรง:[${activeThought.s}] ภายใต้สภาวะจิตใจ[${currentMood.name}]`;
-            
-            addLog(`เสกแร่ธาตุ: ${objName}`);
+            if(isParent) statistics.galaxies++;
+            document.getElementById('starCount').innerText = celestialObjects.length;
+            document.getElementById('galCount').innerText = statistics.galaxies;
+            document.getElementById('creationSpec').innerText = `🛠️ เจตจำนงสำเร็จ: ถือกำเนิด [${objName}] มวล: ${Math.floor(mass)} | อุณหภูมิผิว: ${temp}°C`;
         }
 
-        function addLog(txt) {
-            const container = document.getElementById('logContainer');
-            container.innerHTML += `<div>> ${txt}</div>`;
-            container.scrollTop = container.scrollHeight;
-        }
 
-        // 🎨 RENDER ENGINE (แสดงผลกราฟิกอวกาศแบบ Dynamic และรองรับการเลื่อนหน้าจอ)
-        function draw() {
-            // เคลียร์หน้าจอพร้อมทำเอฟเฟกต์แสงหางลาก (Motion Blur)
-            ctx.fillStyle = 'rgba(2, 2, 5, 0.15)';
+        // 🎨 PHYSICS & RENDER ENGINE (60 FPS ลูกโซ่ความจริงจำลอง)
+        function updateAndDraw() {
+            // เคลียร์จอแบบเคลียร์ขาดหมดจด สลัดอาการภาพค้าง
+            ctx.fillStyle = "#010103";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             ctx.save();
-            // 🕹️ จุดสำคัญ: เลื่อนตำแหน่งแปรงวาดตามพิกัดกล้องที่คุณลาก
+            // เลื่อนกล้องตามการลากนิ้ว/ลากเมาส์
             ctx.translate(canvas.width / 2 + camera.x, canvas.height / 2 + camera.y);
 
-            // วาดตารางมิติมืดจางๆ (ทำให้รู้ว่าจอกำลังเลื่อน)
-            ctx.strokeStyle = 'rgba(56, 189, 248, 0.03)';
-            ctx.lineWidth = 1;
-            const gridSize = 200;
-            for(let x = -2000; x <= 2000; x += gridSize) {
-                ctx.beginPath(); ctx.moveTo(x, -2000); ctx.lineTo(x, 2000); ctx.stroke();
-            }
-            for(let y = -2000; y <= 2000; y += gridSize) {
-                ctx.beginPath(); ctx.moveTo(-2000, y); ctx.lineTo(2000, y); ctx.stroke();
+            // 🪐 1. คำนวณฟิสิกส์แรงดึงดูดระหว่างมวลแท้จริง (N-Body Gravity Interaction)
+            for (let i = 0; i < celestialObjects.length; i++) {
+                let objA = celestialObjects[i];
+                for (let j = i + 1; j < celestialObjects.length; j++) {
+                    let objB = celestialObjects[j];
+
+                    let dx = objB.x - objA.x;
+                    let dy = objB.y - objA.y;
+                    let dist = Math.hypot(dx, dy);
+
+                    if (dist < 1) dist = 1;
+
+                    // 💥 ตรวจจับการชนกัน (Collision Detect) ถ้าใกล้เกินไปจะชนระเบิดรวมมวลกันจริง!
+                    if (dist < (objA.radius + objB.radius)) {
+                        statistics.explosions++;
+                        document.getElementById('boomCount').innerText = statistics.explosions;
+
+                        // สร้างเอฟเฟกต์ระเบิดกระจายแสง
+                        explosionEffects.push({ x: (objA.x + objB.x)/2, y: (objA.y + objB.y)/2, radius: 5, maxRadius: objA.radius * 2.5, alpha: 1 });
+
+                        // ดาวดวงที่มวลมากกว่าจะเป็นฝ่ายกลืนกินดาวดวงเล็ก
+                        if (objA.mass >= objB.mass) {
+                            objA.radius += objB.radius * 0.3;
+                            objA.mass += objB.mass;
+                            celestialObjects.splice(j, 1);
+                            j--;
+                        } else {
+                            objB.radius += objA.radius * 0.3;
+                            objB.mass += objA.mass;
+                            celestialObjects.splice(i, 1);
+                            i--;
+                            break;
+                        }
+                        continue;
+                    }
+
+                    // สูตรคำนวณแรงดึงดูดนิวตันจำลอง F = (G * m1 * m2) / r^2
+                    let force = (0.1 * objA.mass * objB.mass) / (dist * dist);
+                    let ax = (force * dx) / dist;
+                    let ay = (force * dy) / dist;
+
+                    // ส่งผลต่อความเร็วลอยเคลื่อนที่ของวัตถุจริง
+                    objA.vx += ax / objA.mass;
+                    objA.vy += ay / objA.mass;
+                    objB.vx -= ax / objB.mass;
+                    objB.vy -= ay / objB.mass;
+                }
             }
 
-            // วาดและประมวลผลวัตถุประหลาดที่พระเจ้าปั้น
-            createdObjects.forEach(obj => {
-                // อัปเดตตำแหน่งและการเคลื่อนที่ (ทำให้วัตถุไม่นิ่งค้าง มีชีวิตชีวา)
+            // 🪐 2. วาดดวงดาวและวัตถุแปลกประหลาดลงผืนผ้าใบอวกาศ
+            celestialObjects.forEach(obj => {
                 obj.x += obj.vx;
                 obj.y += obj.vy;
-                obj.angle += obj.rotSpeed;
-                obj.pulse += obj.pulseSpeed;
-
-                let size = obj.baseSize + Math.sin(obj.pulse) * 8;
+                obj.pulse += 0.02;
 
                 ctx.save();
                 ctx.translate(obj.x, obj.y);
-                ctx.rotate(obj.angle);
 
-                let grad = ctx.createLinearGradient(-size, -size, size, size);
+                let grad = ctx.createRadialGradient(0, 0, 2, 0, 0, obj.radius);
                 grad.addColorStop(0, obj.color1);
                 grad.addColorStop(1, obj.color2);
                 ctx.fillStyle = grad;
-                ctx.strokeStyle = obj.color1;
-                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = "rgba(255,255,255,0.15)";
+                ctx.lineWidth = 1;
 
-                // วาดรูปร่างประหลาดๆ ตามการนึกคิดของพระเจ้า
                 ctx.beginPath();
-                if(obj.shape === "cube") {
-                    ctx.rect(-size/2, -size/2, size, size);
+                // วาดรูปร่างที่พระเจ้าประดิษฐ์ขึ้นตามประเภทของสสาร
+                if (obj.shapeType === "plasma_core") {
+                    ctx.arc(0, 0, obj.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    // เพิ่มแสงเรืองรองดั่งดาวพ่อแม่
+                    ctx.fillStyle = "rgba(255,255,255,0.08)";
+                    ctx.beginPath(); ctx.arc(0, 0, obj.radius * 1.4, 0, Math.PI * 2); ctx.fill();
+                } else if (obj.shapeType === "cube") {
+                    ctx.rect(-obj.radius, -obj.radius, obj.radius * 2, obj.radius * 2);
                     ctx.fill(); ctx.stroke();
-                }
-                else if(obj.shape === "spike") {
-                    for(let i=0; i<12; i++) {
-                        ctx.rotate(Math.PI / 6);
-                        ctx.lineTo(0, size);
-                        ctx.lineTo(4, 0);
+                } else if (obj.shapeType === "crystal") {
+                    ctx.moveTo(0, -obj.radius);
+                    ctx.lineTo(obj.radius, 0); ctx.lineTo(0, obj.radius); ctx.lineTo(-obj.radius, 0);
+                    ctx.closePath(); ctx.fill(); ctx.stroke();
+                } else {
+                    // รูปทรงแฉกพลังงานงอกเงย
+                    for(let i=0; i<6; i++) {
+                        ctx.rotate(Math.PI / 3);
+                        ctx.lineTo(0, obj.radius); ctx.lineTo(3, 0);
                     }
-                    ctx.fill(); ctx.stroke();
-                }
-                else if(obj.shape === "plasma") {
-                    ctx.arc(0, 0, size/1.5, 0, Math.PI*2);
                     ctx.fill();
-                    // เพิ่มแสงออร่าซ้อน
-                    ctx.fillStyle = 'rgba(255,255,255,0.1)';
-                    ctx.arc(Math.sin(obj.pulse)*3, 0, size, 0, Math.PI*2);
-                    ctx.fill();
-                }
-                else if(obj.shape === "crystal") {
-                    ctx.moveTo(0, -size);
-                    ctx.lineTo(size/1.2, -size/3);
-                    ctx.lineTo(size/2, size);
-                    ctx.lineTo(-size/2, size);
-                    ctx.lineTo(-size/1.2, -size/3);
-                    ctx.closePath();
-                    ctx.fill(); ctx.stroke();
                 }
 
-                // สลักป้ายชื่อกำกับสสาร
-                ctx.fillStyle = 'rgba(241, 245, 249, 0.5)';
-                ctx.font = '9px monospace';
-                ctx.fillText(obj.name, size + 5, 4);
+                // สลักชื่อรหัสสสารเหนือดวงดาว
+                ctx.fillStyle = "rgba(241, 245, 249, 0.4)";
+                ctx.font = "8px monospace";
+                ctx.fillText(obj.name, obj.radius + 4, 3);
+
+                // ถ้าดาวดวงนี้ถูกเลือกตรวจสอบ ให้วาดวงแหวนล็อกเป้าสีทองครอบไว้
+                if(selectedObject === obj) {
+                    ctx.strokeStyle = "#f59e0b";
+                    ctx.lineWidth = 1.5;
+                    ctx.beginPath(); ctx.arc(0, 0, obj.radius + 8, 0, Math.PI*2); ctx.stroke();
+                }
 
                 ctx.restore();
             });
 
+            // 💥 3. วาดเอฟเฟกต์การชนกันตู้มต้าม
+            explosionEffects.forEach((eff, idx) => {
+                eff.radius += 2;
+                eff.alpha -= 0.02;
+                ctx.strokeStyle = `rgba(239, 68, 68, ${eff.alpha})`;
+                ctx.lineWidth = 3;
+                ctx.beginPath(); ctx.arc(eff.x, eff.y, eff.radius, 0, Math.PI*2); ctx.stroke();
+                if(eff.alpha <= 0) explosionEffects.splice(idx, 1);
+            });
+
             ctx.restore();
-            requestAnimationFrame(draw);
+            requestAnimationFrame(updateAndDraw);
         }
 
-        // เริ่มต้นการทำงานระบบ
-        draw();
-        
-        // พระเจ้าจะเริ่มนิมิตและสร้างสิ่งใหม่ๆ ทุก 4 วินาทีแบบไม่สิ้นสุด
-        setInterval(godBrainProcess, 4000);
-        setTimeout(godBrainProcess, 800);
+        // เริ่มสตาร์ทจักรวาลจริง
+        updateAndDraw();
+
+        // ปล่อยให้พระเจ้าสรรค์สร้างวัตถุมวลสารใหม่ๆ มาปฏิสัมพันธ์กันทุกๆ 3.5 วินาที
+        setInterval(godMindPulse, 3500);
+        setTimeout(godMindPulse, 500);
     </script>
 </body>
 </html>
