@@ -15,8 +15,8 @@
             flex-direction: column;
             align-items: center;
         }
-        h1 { color: #38bdf8; margin-bottom: 5px; }
-        .subtitle { color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px; }
+        h1 { color: #38bdf8; margin-bottom: 5px; text-align: center; }
+        .subtitle { color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px; text-align: center; }
         .container {
             display: flex;
             gap: 20px;
@@ -80,6 +80,10 @@
             text-align: center;
         }
         .stat-num { font-size: 1.3rem; font-weight: bold; color: #38bdf8; }
+        @media (max-width: 768px) {
+            .container { flex-direction: column; height: auto; }
+            .right-panel { height: 400px; }
+        }
     </style>
 </head>
 <body>
@@ -88,7 +92,6 @@
     <div class="subtitle">คุณอยู่เหนือกว่าพระเจ้า บงการและเฝ้าดูพระเจ้าสร้างจักรวาลของพวกเขาเอง</div>
 
     <div class="container">
-        <!-- แผงควบคุมฝั่งซ้าย (ตัวพระเจ้า) -->
         <div class="panel left-panel">
             <h2>สถานะพระเจ้าที่คุณสร้าง</h2>
             <button class="btn" id="startBtn">เริ่มเปิดสวิตช์ความคิดพระเจ้า</button>
@@ -105,11 +108,10 @@
             </div>
         </div>
 
-        <!-- แผงบันทึกจักรวาลฝั่งขวา -->
         <div class="panel right-panel">
             <h2>บันทึกการสร้างสรรค์แห่งจักรวาล (Universal Log)</h2>
             <div class="log-box" id="logBox">
-                <div style="color: #64748b;">[รบบสแตนด์บาย] รอผู้เหนือกว่ากดเปิดสวิตช์ความคิด...</div>
+                <div style="color: #64748b;">[ระบบสแตนด์บาย] รอผู้เหนือกว่ากดเปิดสวิตช์ความคิด...</div>
             </div>
         </div>
     </div>
@@ -123,7 +125,6 @@
         let gameInterval = null;
         let step = 0;
 
-        // คลังไอเดียสมองกลของพระเจ้า (จำลองความคิดอิสระ 100%)
         const thoughts = [
             { t: "ความว่างเปล่านี้ช่างเงียบเชียบเกินไป... ข้าต้องการแสงสว่างและการระเบิด!", a: "ระเบิดบิ๊กแบง (Big Bang) กำเนิดมิติและเวลาใหม่!", type: "galaxy", update: {galaxy: 1, stars: 10} },
             { t: "เศษฝุ่นละอองคอสมิกกำลังลอยเคว้ง ข้าจะใช้แรงดึงดูดปั้นพวกมันรวมกัน", a: "สร้างกาแล็กซีทางช้างเผือก และจุดไฟดวงอาทิตย์ดวงใหม่", type: "stars", update: {stars: 50} },
@@ -145,26 +146,19 @@
         }
 
         function runGodMind() {
-            if (step === 0) {
-                logBox.innerHTML = "";
-            }
+            if (step === 0) { logBox.innerHTML = ""; }
 
             if (step < thoughts.length) {
                 const current = thoughts[step];
-                
-                // แสดงความคิดพระเจ้า
                 godMood.innerHTML = `<span style="color:#a855f7;">✨ พระเจ้ากำลังคิด:</span> "${current.t}"`;
                 
-                // เขียนลงบันทึก Log
                 let logHTML = `
                     <div class="thought">💭 พระเจ้าคิด: "${current.t}"</div>
                     <div class="action">⚡ การกระทำ: ${current.a}</div>
                 `;
                 
                 if (current.update) {
-                    for (let key in current.update) {
-                        stats[key] += current.update[key];
-                    }
+                    for (let key in current.update) { stats[key] += current.update[key]; }
                     logHTML += `<div class="creation">🛠️ สิ่งที่เพิ่มขึ้นในจักรวาล: ${JSON.stringify(current.update)}</div>`;
                 }
                 
@@ -188,15 +182,14 @@
             if (startBtn.innerText.includes("รีเซ็ต")) {
                 stats = { galaxy: 0, stars: 0, life: 0, civ: 0 };
                 updateStats();
-                logBox.innerHTML = '<div style="color: #64748b;">[รบบสแตนด์บาย] รอผู้เหนือกว่ากดเปิดสวิตช์ความคิด...</div>';
+                logBox.innerHTML = '<div style="color: #64748b;">[ระบบสแตนด์บาย] รอผู้เหนือกว่ากดเปิดสวิตช์ความคิด...</div>';
                 godMood.innerText = "ระบบความคิด: ปิดการทำงาน";
                 startBtn.innerText = "เริ่มเปิดสวิตช์ความคิดพระเจ้า";
                 return;
             }
-
             startBtn.disabled = true;
             startBtn.innerText = "กำลังจำลองระบบความคิดพระเจ้า...";
-            gameInterval = setInterval(runGodMind, 4000); // ทุกๆ 4 วินาที พระเจ้าจะคิด 1 เรื่อง
+            gameInterval = setInterval(runGodMind, 4000);
         });
     </script>
 </body>
