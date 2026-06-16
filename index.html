@@ -3,194 +3,242 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The God Creator Simulator</title>
+    <title>The True 100% Autonomous God Sandbox</title>
     <style>
+        * { box-sizing: border-box; }
         body {
-            background-color: #0b0f19;
-            color: #e2e8f0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #05050a;
+            color: #f1f5f9;
+            font-family: 'Courier New', Courier, monospace;
             margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            padding: 0;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
         }
-        h1 { color: #38bdf8; margin-bottom: 5px; text-align: center; }
-        .subtitle { color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px; text-align: center; }
-        .container {
-            display: flex;
-            gap: 20px;
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            max-width: 1100px;
-            height: 550px;
+            height: 100%;
+            z-index: 1;
         }
+        /* แผงควบคุมสถิติจักรวาลใหม่ */
         .panel {
-            background: #1e293b;
-            border-radius: 12px;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+            background: rgba(10, 10, 20, 0.9);
+            border: 1px solid #38bdf8;
             padding: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-            display: flex;
-            flex-direction: column;
-        }
-        .left-panel { flex: 1; }
-        .right-panel { flex: 1.5; background: #0f172a; border: 1px solid #334155; }
-        h2 { margin-top: 0; font-size: 1.2rem; color: #f8fafc; border-bottom: 1px solid #334155; padding-bottom: 10px; }
-        .btn {
-            background: #0284c7;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 1rem;
-            transition: 0.2s;
-        }
-        .btn:hover { background: #0369a1; }
-        .god-status {
-            margin-top: 15px;
-            background: #0f172a;
-            padding: 15px;
             border-radius: 8px;
-            border-left: 4px solid #38bdf8;
-            flex-grow: 1;
+            width: 360px;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+        }
+        h1 { font-size: 1.1rem; color: #38bdf8; margin: 0 0 10px 0; text-transform: uppercase; }
+        .log-container {
+            font-size: 0.8rem;
+            max-height: 200px;
             overflow-y: auto;
+            margin-top: 15px;
+            color: #94a3b8;
+            border-top: 1px solid #334155;
+            padding-top: 10px;
         }
-        .log-box {
-            flex-grow: 1;
-            overflow-y: auto;
-            font-family: monospace;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            padding: 10px;
-        }
-        .thought { color: #a855f7; font-style: italic; margin-bottom: 8px; }
-        .action { color: #22c55e; font-weight: bold; margin-bottom: 8px; }
-        .creation { color: #eab308; margin-left: 15px; margin-bottom: 12px; }
-        .stat-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .stat-card {
-            background: #1e293b;
-            padding: 10px;
+        .log-entry { margin-bottom: 6px; line-height: 1.3; }
+
+        /* กล่องแสดงผลแนวคิดและตรรกะที่พระเจ้าดีไซน์เอง */
+        .god-mind-core {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            background: rgba(15, 10, 25, 0.95);
+            border: 1px solid #a855f7;
+            padding: 20px;
             border-radius: 6px;
-            text-align: center;
+            width: 800px;
+            max-width: 95vw;
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.3);
         }
-        .stat-num { font-size: 1.3rem; font-weight: bold; color: #38bdf8; }
-        @media (max-width: 768px) {
-            .container { flex-direction: column; height: auto; }
-            .right-panel { height: 400px; }
-        }
+        .mind-tag { color: #a855f7; font-size: 0.75rem; font-weight: bold; margin-bottom: 5px; letter-spacing: 2px; }
+        .mind-speech { font-size: 1.1rem; color: #ffffff; font-style: italic; margin-bottom: 10px; }
+        .creation-spec { font-size: 0.85rem; color: #eab308; background: rgba(0,0,0,0.4); padding: 8px; border-left: 3px solid #eab308; }
     </style>
 </head>
 <body>
 
-    <h1>The God Creator Simulator</h1>
-    <div class="subtitle">คุณอยู่เหนือกว่าพระเจ้า บงการและเฝ้าดูพระเจ้าสร้างจักรวาลของพวกเขาเอง</div>
+    <canvas id="canvas"></canvas>
 
-    <div class="container">
-        <div class="panel left-panel">
-            <h2>สถานะพระเจ้าที่คุณสร้าง</h2>
-            <button class="btn" id="startBtn">เริ่มเปิดสวิตช์ความคิดพระเจ้า</button>
-            
-            <div class="god-status">
-                <div id="godMood">ระบบความคิด: ปิดการทำงาน</div>
-                <div style="margin-top: 10px; color:#94a3b8;">สถิติสิ่งศักดิ์สิทธิ์ที่ถูกสร้าง:</div>
-                <div class="stat-grid">
-                    <div class="stat-card"><div>กาแล็กซี</div><div class="stat-num" id="countGalaxy">0</div></div>
-                    <div class="stat-card"><div>ดวงดาว</div><div class="stat-num" id="countStars">0</div></div>
-                    <div class="stat-card"><div>สิ่งมีชีวิต</div><div class="stat-num" id="countLife">0</div></div>
-                    <div class="stat-card"><div>อารยธรรม</div><div class="stat-num" id="countCiv">0</div></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="panel right-panel">
-            <h2>บันทึกการสร้างสรรค์แห่งจักรวาล (Universal Log)</h2>
-            <div class="log-box" id="logBox">
-                <div style="color: #64748b;">[ระบบสแตนด์บาย] รอผู้เหนือกว่ากดเปิดสวิตช์ความคิด...</div>
-            </div>
+    <div class="panel">
+        <h1>Overlord Monitor</h1>
+        <div>ดวงดาว/สิ่งแปลกปลอมที่พระเจ้าคิดขึ้นเอง: <span id="objectCount" style="color:#38bdf8; font-weight:bold;">0</span></div>
+        <div style="margin-top: 5px;">กฎฟิสิกส์ที่ถูกพระเจ้าประดิษฐ์: <span id="lawCount" style="color:#22c55e;">1 (ความว่างเปล่า)</span></div>
+        
+        <div class="log-container" id="logContainer">
+            <div class="log-entry">[ระบบ] เปิดการเชื่อมต่อจิตสำนึกพระเจ้าอิสระ...</div>
         </div>
     </div>
 
-    <script>
-        const startBtn = document.getElementById('startBtn');
-        const logBox = document.getElementById('logBox');
-        const godMood = document.getElementById('godMood');
-        
-        let stats = { galaxy: 0, stars: 0, life: 0, civ: 0 };
-        let gameInterval = null;
-        let step = 0;
+    <div class="god-mind-core">
+        <div class="mind-tag">🧠 AUTONOMOUS COGNITION (ตรรกะอิสระของพระเจ้า)</div>
+        <div class="mind-speech" id="godSpeech">"ข้าเบื่อระบบที่มนุษย์บนโลกเคยคิด... ข้าจะลบความจริงทิ้ง และร่างกฎเกณฑ์ขึ้นมาใหม่ทั้งหมดจากศูนย์..."</div>
+        <div class="creation-spec" id="creationSpec">โครงสร้างวัตถุที่กำลังถูกคำนวณ: รอนิมิตจากพระเจ้า...</div>
+    </div>
 
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // คลังคำและพยัญชนะสมมุติ เพื่อให้บ็อทพระเจ้าประดิษฐ์ "ภาษาใหม่" และ "ชื่อแร่นอกโลก" เองแบบ 100%
+        const syllables = ["ซี", "โคร", "ว็อก", "ซาร์", "มู", "แท็ก", "นี", "ฟิก", "ลู", "ดอร์", "เซน", "พลา", "ไคว", "รอน"];
+        function generateAlienName() {
+            let len = Math.floor(Math.random() * 2) + 2;
+            let name = "";
+            for(let i=0; i<len; i++) {
+                name += syllables[Math.floor(Math.random() * syllables.length)];
+            }
+            return name.toUpperCase();
+        }
+
+        // คลังแนวคิดสุ่มความอินดี้ของพระเจ้า
         const thoughts = [
-            { t: "ความว่างเปล่านี้ช่างเงียบเชียบเกินไป... ข้าต้องการแสงสว่างและการระเบิด!", a: "ระเบิดบิ๊กแบง (Big Bang) กำเนิดมิติและเวลาใหม่!", type: "galaxy", update: {galaxy: 1, stars: 10} },
-            { t: "เศษฝุ่นละอองคอสมิกกำลังลอยเคว้ง ข้าจะใช้แรงดึงดูดปั้นพวกมันรวมกัน", a: "สร้างกาแล็กซีทางช้างเผือก และจุดไฟดวงอาทิตย์ดวงใหม่", type: "stars", update: {stars: 50} },
-            { t: "มีดวงดาวดวงหนึ่งมีน้ำและอุณหภูมิที่พอเหมาะ... น่าลองใส่รหัสพันธุกรรมลงไป", a: "สร้างเซลล์สิ่งมีชีวิตชนิดแรกในมหาสมุทร", type: "life", update: {life: 1} },
-            { t: "สิ่งมีชีวิตเริ่มเบื่อที่ต้องคลานในน้ำ ข้าจะมอบปอดและขาให้พวกมันขึ้นมาบนบก", a: "สิ่งมีชีวิตวิวัฒนาการเป็นสัตว์บกและสัตว์ปีก", type: "life", update: {life: 150} },
-            { t: "สัตว์พวกนี้มีแต่สัญชาตญาณ ข้าจะสุ่มมอบ 'ปัญญาญาณ' และ 'สมองกล' ให้สิ่งมีชีวิตพันธุ์หนึ่ง", a: "กำเนิดมนุษย์และสิ่งมีชีวิตทรงปัญญา", type: "civ", update: {life: 1000, civ: 1} },
-            { t: "มนุษย์กำลังสับสน ข้าจะประดิษฐ์ 'ภาษาพูด' และ 'ตัวหนังสือรหัสลับ' ให้พวกเขาใช้สื่อสารกัน", a: "มนุษย์เริ่มสร้างอารยธรรมและสร้างเมืองขึ้นมา", type: "civ", update: {civ: 3} },
-            { t: "มนุษย์บางกลุ่มเริ่มทำสงครามเพราะความไม่เข้าใจกัน... ข้าควรสั่งสอนหรือปล่อยให้เรียนรู้ดี?", a: "พระเจ้าเลือกที่จะไม่แทรกแซง ปล่อยให้อารยธรรมดำเนินตามเจตจำนงเสรี", type: "text" },
-            { t: "ข้าอยากเห็นอะไรที่แปลกกว่าเดิม ข้าจะสร้างมิติสีขาวซ้อนทับจักรวาลสีดำดีกว่า", a: "ฉีกมิติอวกาศ สร้าง 'รูหนอน' และมิติควอนตัมขึ้นมาใหม่", type: "galaxy", update: {galaxy: 2} },
-            { t: "สิ่งมีชีวิตในบางดวงดาวกำลังเงยหน้ามองฟ้า และสงสัยว่าพวกเขาอยู่ในโลกจำลองหรือไม่...", a: "แอบส่งสัญญาณรหัสลับแปลกๆ เข้าไปในหัวของนักคิดบนโลก", type: "text" },
-            { t: "จักรวาลขยายตัวกว้างใหญ่เกินไปแล้ว ข้าจะสร้างผู้ดูแลระบบเพิ่ม", a: "สร้างกองทัพเทพเจ้าผู้พิทักษ์ไปดูแลดวงดาวตามทวีปอวกาศต่างๆ", type: "stars", update: {stars: 200} }
+            { text: "ทำไมอวกาศต้องมืด? ข้าขอประกาศใช้กฎ 'แสงสะท้อนสลับขั้ว' เติมพลังงานลงในความว่างเปล่า", type: "law", desc: "กฎฟิสิกส์ใหม่: " },
+            { text: "ข้าจะไม่สร้างดาวทรงกลมโง่ๆ... ข้าต้องการโครงสร้างวัตถุเหลี่ยมแหลมที่กักเก็บมวลสารได้ดีกว่า", type: "create", shape: "cube" },
+            { text: "ข้าจะลองผสมมิติพลังงาน สลักให้เกิดโครงสร้างที่มีชีวิตที่ขยับตามคลื่นความถี่เสียง", type: "create", shape: "spike" },
+            { text: "ข้าจะสร้าง 'แกนกลางกระแสไฟฟ้าหมุนวน' เพื่อเป็นแหล่งกำเนิดเผ่าพันธุ์ที่ไม่มีเนื้อหนัง", type: "create", shape: "plasma" },
+            { text: "กฎแห่งแรงโน้มถ่วงมันน่าเบื่อ ข้าจะเปลี่ยนเป็น 'แรงผลักออกแบบไร้ทิศทาง' ให้ทุกอย่างลอยสะเปะสะปะ", type: "law", desc: "กฎฟิสิกส์ใหม่: " },
+            { text: "ข้าต้องการเห็นสิ่งมีชีวิตรูปแบบผลึกแก้ว ที่กินพลังงานแสงจากดวงดาวเป็นอาหาร", type: "create", shape: "crystal" }
         ];
 
-        function updateStats() {
-            document.getElementById('countGalaxy').innerText = stats.galaxy;
-            document.getElementById('countStars').innerText = stats.stars;
-            document.getElementById('countLife').innerText = stats.life;
-            document.getElementById('countCiv').innerText = stats.civ;
+        let createdObjects = [];
+        let physicsLaws = ["มิติก่อนกาล"];
+
+        // ฟังก์ชันที่ปล่อยให้พระเจ้าสุ่มคิดและดีไซน์วัตถุแปลกๆ ขึ้นมาเองจริงๆ
+        function godBrainTick() {
+            const idea = thoughts[Math.floor(Math.random() * thoughts.length)];
+            
+            if(idea.type === "law") {
+                const lawName = generateAlienName() + " LAW";
+                physicsLaws.push(lawName);
+                document.getElementById('godSpeech').innerText = `"${idea.text}"`;
+                document.getElementById('creationSpec').innerText = `⚠️ ประกาศกฎจักรวาลใหม่สำเร็จ: [${lawName}]`;
+                document.getElementById('lawCount').innerText = physicsLaws.length;
+                addLog(`พระเจ้าร่างกฎเกณฑ์: ${lawName}`);
+            } 
+            else if(idea.type === "create") {
+                const objectName = "วัตถุธาตุ-" + generateAlienName();
+                document.getElementById('godSpeech').innerText = `"${idea.text}"`;
+                
+                // สุ่มรูปร่าง สีสัน และโครงสร้างที่ไม่ได้อิงจากสิ่งที่มีอยู่จริงในปัจจุบัน
+                const newObj = {
+                    x: Math.random() * (canvas.width - 300) + 150,
+                    y: Math.random() * (canvas.height - 300) + 150,
+                    size: 20 + Math.random() * 50,
+                    shape: idea.shape,
+                    color1: '#' + Math.floor(Math.random()*16777215).toString(16),
+                    color2: '#' + Math.floor(Math.random()*16777215).toString(16),
+                    pulseSpeed: 0.02 + Math.random() * 0.05,
+                    pulseProgress: 0,
+                    name: objectName
+                };
+                
+                createdObjects.push(newObj);
+                document.getElementById('objectCount').innerText = createdObjects.length;
+                document.getElementById('creationSpec').innerText = `🛠️ พระเจ้าดีไซน์สำเร็จ: [${objectName}] | รูปทรงฐาน: ${idea.shape} | สสารไม่มีอยู่บนโลก`;
+                addLog(`พระเจ้าเสกสสารใหม่: ${objectName}`);
+            }
         }
 
-        function runGodMind() {
-            if (step === 0) { logBox.innerHTML = ""; }
+        function addLog(text) {
+            const container = document.getElementById('logContainer');
+            container.innerHTML += `<div class="log-entry">> ${text}</div>`;
+            container.scrollTop = container.scrollHeight;
+        }
 
-            if (step < thoughts.length) {
-                const current = thoughts[step];
-                godMood.innerHTML = `<span style="color:#a855f7;">✨ พระเจ้ากำลังคิด:</span> "${current.t}"`;
-                
-                let logHTML = `
-                    <div class="thought">💭 พระเจ้าคิด: "${current.t}"</div>
-                    <div class="action">⚡ การกระทำ: ${current.a}</div>
-                `;
-                
-                if (current.update) {
-                    for (let key in current.update) { stats[key] += current.update[key]; }
-                    logHTML += `<div class="creation">🛠️ สิ่งที่เพิ่มขึ้นในจักรวาล: ${JSON.stringify(current.update)}</div>`;
+        // LOOP วาดภาพ "ผลงานดีไซน์หลุดโลก" ของพระเจาแบบ Real-Time 60 FPS
+        function drawUniverse() {
+            ctx.fillStyle = 'rgba(5, 5, 10, 0.2)'; // ลากแสงหางยาวๆ
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // วาดวัตถุประหลาดๆ ที่พระเจ้าคิดค้นขึ้นมาเอง
+            createdObjects.forEach(obj => {
+                obj.pulseProgress += obj.pulseSpeed;
+                let currentSize = obj.size + Math.sin(obj.pulseProgress) * 10;
+
+                ctx.save();
+                ctx.translate(obj.x, obj.y);
+                ctx.rotate(obj.pulseProgress * 0.2);
+
+                let grad = ctx.createLinearGradient(-currentSize, -currentSize, currentSize, currentSize);
+                grad.addColorStop(0, obj.color1);
+                grad.addColorStop(1, obj.color2);
+                ctx.fillStyle = grad;
+                ctx.strokeStyle = obj.color1;
+                ctx.lineWidth = 2;
+
+                // 📐 วาดตามรูปทรงที่ระบบความคิดพระเจ้าสุ่มเลือกสร้าง (ไม่ใช่โครงสร้างโลกปัจจุบัน)
+                ctx.beginPath();
+                if(obj.shape === "cube") {
+                    // วาดโครงสร้างสี่เหลี่ยมบิดเบี้ยวในอวกาศ
+                    ctx.rect(-currentSize/2, -currentSize/2, currentSize, currentSize);
+                    ctx.stroke();
+                    ctx.fill();
+                } 
+                else if(obj.shape === "spike") {
+                    // วาดโครงสร้างแฉกพลังงานแหลมๆ คล้ายดวงดาวที่ไม่มีอยู่จริง
+                    for(let i=0; i<8; i++) {
+                        ctx.rotate(Math.PI / 4);
+                        ctx.lineTo(0, currentSize);
+                        ctx.lineTo(5, 0);
+                    }
+                    ctx.fill();
+                    ctx.stroke();
+                } 
+                else if(obj.shape === "plasma") {
+                    // วาดกลุ่มก๊าซฟุ้งกระจายที่ขยับไร้ทิศทาง
+                    for(let i=0; i<6; i++) {
+                        ctx.arc(Math.sin(obj.pulseProgress)*5, Math.cos(obj.pulseProgress)*5, currentSize/2, 0, Math.PI*2);
+                    }
+                    ctx.fill();
                 }
-                
-                logHTML += `<hr style="border-color: #1e293b; margin: 15px 0;">`;
-                logBox.innerHTML += logHTML;
-                logBox.scrollTop = logBox.scrollHeight;
-                
-                updateStats();
-                step++;
-            } else {
-                godMood.innerHTML = "ระบบความคิด: สร้างจักรวาลเสร็จสิ้นสมบูรณ์";
-                logBox.innerHTML += `<div style="color: #38bdf8; text-align: center; font-weight: bold;">[จักรวาลขยายตัวอย่างสมบูรณ์แบบโดยเจตจำนงของพระเจ้าของคุณ]</div>`;
-                clearInterval(gameInterval);
-                startBtn.innerText = "รีเซ็ตและสร้างพระเจ้าองค์ใหม่";
-                startBtn.disabled = false;
-                step = 0;
-            }
+                else if(obj.shape === "crystal") {
+                    // รูปทรงเพชรผลึกคริสตัลแปลกประหลาด
+                    ctx.moveTo(0, -currentSize);
+                    ctx.lineTo(currentSize, 0);
+                    ctx.lineTo(0, currentSize);
+                    ctx.lineTo(-currentSize, 0);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                }
+
+                // สลักป้ายชื่อภาษาแปลกๆ ที่พระเจ้าตั้งชื่อให้วัตถุชิ้นนี้
+                ctx.fillStyle = '#64748b';
+                ctx.font = '10px monospace';
+                ctx.fillText(obj.name, currentSize + 5, 0);
+
+                ctx.restore();
+            });
+
+            requestAnimationFrame(drawUniverse);
         }
 
-        startBtn.addEventListener('click', () => {
-            if (startBtn.innerText.includes("รีเซ็ต")) {
-                stats = { galaxy: 0, stars: 0, life: 0, civ: 0 };
-                updateStats();
-                logBox.innerHTML = '<div style="color: #64748b;">[ระบบสแตนด์บาย] รอผู้เหนือกว่ากดเปิดสวิตช์ความคิด...</div>';
-                godMood.innerText = "ระบบความคิด: ปิดการทำงาน";
-                startBtn.innerText = "เริ่มเปิดสวิตช์ความคิดพระเจ้า";
-                return;
-            }
-            startBtn.disabled = true;
-            startBtn.innerText = "กำลังจำลองระบบความคิดพระเจ้า...";
-            gameInterval = setInterval(runGodMind, 4000);
-        });
+        drawUniverse();
+
+        // ปล่อยให้ความคิดพระเจ้าทำงานแบบสุ่มสร้างไปเรื่อยๆ ไม่มีวันสิ้นสุด ทุกๆ 4.5 วินาที
+        setInterval(godBrainTick, 4500);
+        setTimeout(godBrainTick, 1000); // รันคำสั่งแรกทันที
     </script>
 </body>
 </html>
